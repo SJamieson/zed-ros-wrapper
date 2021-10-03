@@ -2694,7 +2694,7 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
   uint32_t rgbRawSubnumber = 0; //mPubRawRgb.getNumSubscribers();
   uint32_t leftSubnumber = mPubLeft.getNumSubscribers();
   uint32_t leftRawSubnumber = 0; //mPubRawLeft.getNumSubscribers();
-  uint32_t rightSubnumber = mPubRight.getNumSubscribers();
+  uint32_t rightSubnumber = 0; //mPubRight.getNumSubscribers();
   uint32_t rightRawSubnumber = 0; //mPubRawRight.getNumSubscribers();
   uint32_t rgbGraySubnumber = 0; //mPubRgbGray.getNumSubscribers();
   uint32_t rgbGrayRawSubnumber = 0; //mPubRawRgbGray.getNumSubscribers();
@@ -3558,7 +3558,7 @@ void ZEDWrapperNodelet::device_poll_thread_func()
     uint32_t rgbRawSubnumber = 0; //mPubRawRgb.getNumSubscribers();
     uint32_t leftSubnumber = mPubLeft.getNumSubscribers();
     uint32_t leftRawSubnumber = 0; //mPubRawLeft.getNumSubscribers();
-    uint32_t rightSubnumber = mPubRight.getNumSubscribers();
+    uint32_t rightSubnumber = 0; //mPubRight.getNumSubscribers();
     uint32_t rightRawSubnumber = 0; //mPubRawRight.getNumSubscribers();
     uint32_t rgbGraySubnumber = 0; //mPubRgbGray.getNumSubscribers();
     uint32_t rgbGrayRawSubnumber = 0; //mPubRawRgbGray.getNumSubscribers();
