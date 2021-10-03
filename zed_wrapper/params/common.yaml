@@ -26,7 +26,7 @@ general:
     resolution:                 2                               # '0': HD2K, '1': HD1080, '2': HD720, '3': VGA
     grab_frame_rate:            30                              # Frequency of frame grabbing for internal SDK operations
     gpu_id:                     -1
-    base_frame:                 'base_link'                     # must be equal to the frame_id used in the URDF file
+    base_frame:                 'zedm_downward_base_link'                     # must be equal to the frame_id used in the URDF file
     verbose:                    false                           # Enable info message by the ZED SDK
     svo_compression:            2                               # `0`: LOSSLESS, `1`: AVCHD, `2`: HEVC
     self_calib:                 true                            # enable/disable self calibration at starting
