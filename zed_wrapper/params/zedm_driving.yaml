@@ -2,13 +2,22 @@
 
 general:
     camera_model:               'zedm'
+    camera_name:                driving_cam                             # A name for the camera (can be different from camera model and node name and can be overwritten by the launch file)
+    resolution:                 3                                # '0': HD2K, '1': HD1080, '2': HD720, '3': VGA
+    grab_frame_rate:            30                              # Frequency of frame grabbing for internal SDK operations
+    camera_flip:                false
 
 depth:
+    quality:                    0 # OFF
     min_depth:                  0.35            # Min: 0.1, Max: 3.0 - Default 0.3 - Note: reducing this value wil require more computational power and GPU memory
     max_depth:                  10.0            # Max: 20.0
 
 pos_tracking:
+    pos_tracking_enabled:       false                            # True to enable positional tracking from start
     imu_fusion:                 false            # enable/disable IMU fusion. When set to false, only the optical odometry will be used.
+
+mapping:
+    mapping_enabled:            false                           # True to enable mapping and fused point cloud pubblication
 
 sensors:
     sensors_timestamp_sync:     false           # Synchronize Sensors messages timestamp with latest received frame
