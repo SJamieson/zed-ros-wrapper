@@ -12,9 +12,9 @@ video:
     img_downsample_factor:      0.8                             # Resample factor for images [0.01,1.0] The SDK works with native image sizes, but publishes rescaled image.
 
 depth:
-    quality:                    2                               # '0': NONE, '1': PERFORMANCE, '2': QUALITY, '3': ULTRA
+    quality:                    3                               # '0': NONE, '1': PERFORMANCE, '2': QUALITY, '3': ULTRA
     sensing_mode:               1                               # '0': STANDARD, '1': FILL (not use FILL for robotic applications)
-    min_depth:                  0.35            # Min: 0.1, Max: 3.0 - Default 0.3 - Note: reducing this value wil require more computational power and GPU memory
+    min_depth:                  0.4            # Min: 0.1, Max: 3.0 - Default 0.3 - Note: reducing this value wil require more computational power and GPU memory
     max_depth:                  5.0            # Max: 20.0
     depth_downsample_factor:    0.8
 
