@@ -32,6 +32,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <!-- Base frame -->
     <arg name="base_frame"            default="base_link" />
 
+    <arg name="camera_flip"            default="false" />
+
     <!-- Publish ZED urdf -->
     <arg name="publish_urdf"          default="true" />
 
@@ -98,6 +100,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	<!-- Disable TF publishing -->
         <param name="pos_tracking/publish_tf"            value="$(arg publish_tf)" />
         <param name="pos_tracking/publish_map_tf"        value="$(arg publish_tf)" />
+
+        <param name="general/camera_flip"               value="$(arg camera_flip)" />
 	
     </node>
 </launch>
