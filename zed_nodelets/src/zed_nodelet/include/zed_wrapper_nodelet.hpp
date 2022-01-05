@@ -77,10 +77,20 @@
 #include <mutex>
 #include <thread>
 
+#ifdef USE_MARATHON
+#include "ros_marathon.hpp"
+#endif
+
 using namespace std;
 
 namespace zed_nodelets
 {
+#ifdef USE_MARATHON
+    using namespace ros_marathon;
+#else
+    using namespace image_transport;
+#endif
+
 class ZEDWrapperNodelet : public nodelet::Nodelet
 {
   typedef enum _dyn_params
@@ -171,7 +181,7 @@ protected:
    * image frames exist)
    * \param t : the ros::Time to stamp the image
    */
-  void publishImage(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat img, image_transport::CameraPublisher& pubImg,
+  void publishImage(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat img, CameraPublisher& pubImg,
                     sensor_msgs::CameraInfoPtr camInfoMsg, string imgFrameId, ros::Time t);
 
   /*! \brief Publish a sl::Mat depth image with a ros Publisher
@@ -417,22 +427,22 @@ private:
   const double mSensPubRate = 400.0; // Maximum ODR for ZED2/ZED2i. You can change this to 800 for ZED-M, but it's not recommended
 
   // Publishers
-  image_transport::CameraPublisher mPubRgb;       //
-  image_transport::CameraPublisher mPubRawRgb;    //
-  image_transport::CameraPublisher mPubLeft;      //
-  image_transport::CameraPublisher mPubRawLeft;   //
-  image_transport::CameraPublisher mPubRight;     //
-  image_transport::CameraPublisher mPubRawRight;  //
-  image_transport::CameraPublisher mPubDepth;     //
-  image_transport::Publisher mPubStereo;
-  image_transport::Publisher mPubRawStereo;
+  CameraPublisher mPubRgb;       //
+  CameraPublisher mPubRawRgb;    //
+  CameraPublisher mPubLeft;      //
+  CameraPublisher mPubRawLeft;   //
+  CameraPublisher mPubRight;     //
+  CameraPublisher mPubRawRight;  //
+  CameraPublisher mPubDepth;     //
+  Publisher mPubStereo;
+  Publisher mPubRawStereo;
 
-  image_transport::CameraPublisher mPubRgbGray;
-  image_transport::CameraPublisher mPubRawRgbGray;
-  image_transport::CameraPublisher mPubLeftGray;
-  image_transport::CameraPublisher mPubRawLeftGray;
-  image_transport::CameraPublisher mPubRightGray;
-  image_transport::CameraPublisher mPubRawRightGray;
+  CameraPublisher mPubRgbGray;
+  CameraPublisher mPubRawRgbGray;
+  CameraPublisher mPubLeftGray;
+  CameraPublisher mPubRawLeftGray;
+  CameraPublisher mPubRightGray;
+  CameraPublisher mPubRawRightGray;
 
   ros::Publisher mPubConfMap;    //
   ros::Publisher mPubDisparity;  //

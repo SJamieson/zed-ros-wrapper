@@ -45,6 +45,12 @@ namespace zed_nodelets
 #define MAG_FREQ 50.
 #define BARO_FREQ 25.
 
+#ifdef USE_MARATHON
+    using namespace ros_marathon;
+#else
+    using namespace image_transport;
+#endif
+
 ZEDWrapperNodelet::ZEDWrapperNodelet() : Nodelet()
 {
 }
@@ -428,7 +434,7 @@ void ZEDWrapperNodelet::onInit()
 
   // Create all the publishers
   // Image publishers
-  image_transport::ImageTransport it_zed(mNhNs);
+  ImageTransport it_zed(mNhNs);
 
   // TODO: find a better way to silence / avoid bagging these topics than simply disabling them
 
@@ -2009,7 +2015,7 @@ void ZEDWrapperNodelet::publishPoseFrame(tf2::Transform baseTransform, ros::Time
 }
 
 void ZEDWrapperNodelet::publishImage(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat img,
-                                     image_transport::CameraPublisher& pubImg, sensor_msgs::CameraInfoPtr camInfoMsg,
+                                     CameraPublisher& pubImg, sensor_msgs::CameraInfoPtr camInfoMsg,
                                      string imgFrameId, ros::Time t)
 {
   camInfoMsg->header.stamp = t;
