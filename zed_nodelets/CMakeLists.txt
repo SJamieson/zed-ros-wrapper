@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(zed_nodelets)
+add_compile_definitions(USE_MARATHON)
 
 # if CMAKE_BUILD_TYPE is not specified, take 'Release' as default
 IF(NOT CMAKE_BUILD_TYPE)
