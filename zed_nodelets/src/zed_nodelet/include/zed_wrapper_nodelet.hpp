@@ -421,8 +421,10 @@ private:
   image_transport::CameraPublisher mPubRawRgb;    //
   image_transport::CameraPublisher mPubLeft;      //
   image_transport::CameraPublisher mPubRawLeft;   //
+  ros::Publisher                   mPubQoiLeft;   //
   image_transport::CameraPublisher mPubRight;     //
   image_transport::CameraPublisher mPubRawRight;  //
+  ros::Publisher                   mPubQoiRight;  //
   image_transport::CameraPublisher mPubDepth;     //
   image_transport::Publisher mPubStereo;
   image_transport::Publisher mPubRawStereo;

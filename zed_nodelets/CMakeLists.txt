@@ -38,6 +38,7 @@ if (OPENMP_FOUND)
     set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
+set(zed_interfaces_DIR "/usr/local/share/zed_interfaces/cmake")
 find_package(catkin REQUIRED COMPONENTS
     roscpp
     image_transport
@@ -132,7 +133,7 @@ add_dependencies(
 
 #Add all files in subdirectories of the project in
 # a dummy_target so qtcreator have access to all files
-FILE(GLOB_RECURSE all_files ${CMAKE_SOURCE_DIR}/*)
+FILE(GLOB_RECURSE all_files ${CMAKE_SOURCE_DIR}/src/*)
 add_custom_target(all_files_${PROJECT_NAME} SOURCES ${all_files})
 
 ###############################################################################

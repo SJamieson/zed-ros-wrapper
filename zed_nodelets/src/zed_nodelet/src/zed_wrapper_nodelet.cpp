@@ -109,8 +109,10 @@ void ZEDWrapperNodelet::onInit()
     std::string raw_suffix = "_raw";
     string left_topic = leftTopicRoot + img_topic;
     string left_raw_topic = leftTopicRoot + raw_suffix + img_raw_topic;
+    string left_qoi_topic = left_raw_topic + "/qoi";
     string right_topic = rightTopicRoot + img_topic;
     string right_raw_topic = rightTopicRoot + raw_suffix + img_raw_topic;
+    string right_qoi_topic = right_raw_topic + "/qoi";
     string rgb_topic = rgbTopicRoot + img_topic;
     string rgb_raw_topic = rgbTopicRoot + raw_suffix + img_raw_topic;
     string stereo_topic = stereoTopicRoot + img_topic;
@@ -402,12 +404,16 @@ void ZEDWrapperNodelet::onInit()
     mPubRawLeft = it_zed.advertiseCamera(left_raw_topic, 1); // left raw
     NODELET_INFO_STREAM("Advertised on topic " << mPubRawLeft.getTopic());
     NODELET_INFO_STREAM("Advertised on topic " << mPubRawLeft.getInfoTopic());
+    mPubQoiLeft = mNhNs.advertise<sensor_msgs::CompressedImage>(left_qoi_topic, 1); // left qoi
+    NODELET_INFO_STREAM("Advertised on topic " << mPubQoiLeft.getTopic());
     mPubRight = it_zed.advertiseCamera(right_topic, 1); // right
     NODELET_INFO_STREAM("Advertised on topic " << mPubRight.getTopic());
     NODELET_INFO_STREAM("Advertised on topic " << mPubRight.getInfoTopic());
     mPubRawRight = it_zed.advertiseCamera(right_raw_topic, 1); // right raw
     NODELET_INFO_STREAM("Advertised on topic " << mPubRawRight.getTopic());
     NODELET_INFO_STREAM("Advertised on topic " << mPubRawRight.getInfoTopic());
+    mPubQoiRight = mNhNs.advertise<sensor_msgs::CompressedImage>(right_qoi_topic, 1); // right qoi
+    NODELET_INFO_STREAM("Advertised on topic " << mPubQoiRight.getTopic());
 
 //    mPubRgbGray = it_zed.advertiseCamera(rgb_gray_topic, 1); // rgb
 //    NODELET_INFO_STREAM("Advertised on topic " << mPubRgbGray.getTopic());
@@ -2435,8 +2441,10 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
     uint32_t rgbRawSubnumber = 0;
     uint32_t leftSubnumber = mPubLeft.getNumSubscribers();
     uint32_t leftRawSubnumber = mPubRawLeft.getNumSubscribers();
+    uint32_t leftQoiSubnumber = mPubQoiLeft.getNumSubscribers();
     uint32_t rightSubnumber = mPubRight.getNumSubscribers();
     uint32_t rightRawSubnumber = mPubRawRight.getNumSubscribers();
+    uint32_t rightQoiSubnumber = mPubQoiRight.getNumSubscribers();
     uint32_t rgbGraySubnumber = 0;
     uint32_t rgbGrayRawSubnumber = 0;
     uint32_t leftGraySubnumber = 0;
@@ -2616,6 +2624,13 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
         sensor_msgs::ImagePtr rawLeftImgMsg = boost::make_shared<sensor_msgs::Image>();
         publishImage(rawLeftImgMsg, mat_left_raw, mPubRawLeft, mLeftCamInfoRawMsg, mLeftCamOptFrameId, stamp);
     }
+
+    if (leftQoiSubnumber > 0) {
+        sensor_msgs::CompressedImagePtr leftQoiMsg = boost::make_shared<sensor_msgs::CompressedImage>();
+        sl_tools::imageToCompressedROSmsg(leftQoiMsg, mat_left_raw, mLeftCamOptFrameId, stamp, sl_tools::ImageCompression::QOI);
+        mPubQoiLeft.publish(leftQoiMsg);
+    }
+
     if (rgbRawSubnumber > 0) {
         sensor_msgs::ImagePtr rawRgbImgMsg = boost::make_shared<sensor_msgs::Image>();
         publishImage(rawRgbImgMsg, mat_left_raw, mPubRawRgb, mRgbCamInfoRawMsg, mDepthOptFrameId, stamp);
@@ -2648,6 +2663,12 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
     if (rightRawSubnumber > 0) {
         sensor_msgs::ImagePtr rawRightImgMsg = boost::make_shared<sensor_msgs::Image>();
         publishImage(rawRightImgMsg, mat_right_raw, mPubRawRight, mRightCamInfoRawMsg, mRightCamOptFrameId, stamp);
+    }
+
+    if (rightQoiSubnumber > 0) {
+        sensor_msgs::CompressedImagePtr rightQoiMsg = boost::make_shared<sensor_msgs::CompressedImage>();
+        sl_tools::imageToCompressedROSmsg(rightQoiMsg, mat_right_raw, mRightCamOptFrameId, stamp, sl_tools::ImageCompression::QOI);
+        mPubQoiRight.publish(rightQoiMsg);
     }
 
     // Publish the right raw image GRAY if someone has subscribed to
