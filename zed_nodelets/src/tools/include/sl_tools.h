@@ -23,6 +23,7 @@
 
 #include <ros/time.h>
 #include <sensor_msgs/Image.h>
+#include <sensor_msgs/CompressedImage.h>
 #include <sl/Camera.hpp>
 #include <string>
 #include <vector>
@@ -71,6 +72,19 @@ ros::Time slTime2Ros(sl::Timestamp t);
  * \param t : the ros::Time to stamp the image
  */
 void imageToROSmsg(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat img, std::string frameId, ros::Time t);
+
+enum class ImageCompression {
+    QOI
+};
+
+/*! \brief sl::Mat to ros message conversion with compression
+ * \param imgMsgPtr : the image topic message to publish
+ * \param img : the image to publish
+ * \param frameId : the id of the reference frame of the image
+ * \param t : the ros::Time to stamp the image
+ * \param codec : the type of compression to use
+ */
+void imageToCompressedROSmsg(sensor_msgs::CompressedImagePtr imgMsgPtr, sl::Mat img, std::string frameId, ros::Time t, ImageCompression codec);
 
 /*! \brief Two sl::Mat to ros message conversion
  * \param imgMsgPtr : the image topic message to publish
