@@ -297,6 +297,7 @@ void imageToROSmsg(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat img, std::string fra
 
 void imageToCompressedROSmsg(sensor_msgs::CompressedImagePtr imgMsgPtr, sl::Mat img, std::string frameId, ros::Time t, ImageCompression const codec)
 {
+//	std::cerr << "Called imageToCompressedROSmsg" << std::endl;
     if (!imgMsgPtr)
     {
         return;
@@ -316,9 +317,14 @@ void imageToCompressedROSmsg(sensor_msgs::CompressedImagePtr imgMsgPtr, sl::Mat 
 
     int len = 0;
     qoi_desc desc{static_cast<unsigned int>(img.getWidth()), static_cast<unsigned int>(img.getHeight()), 0, QOI_SRGB};
+//    std::cerr << "Width " << std::to_string(desc.width) << ", height " << std::to_string(desc.height) << std::endl;
+    if (desc.width == 0 || desc.height == 0) {
+//	std::cerr << "Zero size image!" << std::endl;
+	return;
+    }
 
     sl::MAT_TYPE dataType = img.getDataType();
-    char* source;
+    void* source;
 
     switch (dataType)
     {
@@ -338,12 +344,18 @@ void imageToCompressedROSmsg(sensor_msgs::CompressedImagePtr imgMsgPtr, sl::Mat 
             desc.channels = 4;
             source = reinterpret_cast<char*>(img.getPtr<sl::uchar4>());
             break;
+        default:
+	    throw std::invalid_argument("Unsupported image format for this codec");
     }
 
+    if (source == nullptr) throw std::runtime_error("Source is null!");
+
+//    std::cerr << "Starting encode with " << std::to_string(desc.channels) << "channels, address " << std::to_string((unsigned long long)source)<< std::endl;
     auto const data = qoi_encode(source, &desc, &len);
-    if (data == nullptr || len == 0) throw std::invalid_argument("Failed to encode input image");
+    if (data == nullptr) throw std::invalid_argument("Failed to encode input image");
     imgMsgPtr->data.assign(static_cast<uint8_t const* const>(data), static_cast<uint8_t const* const>(data) + len);
     free(data);
+//    std::cerr << "Finished encode, length " << std::to_string(len) << std::endl;
 }
 
 void imagesToROSmsg(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat left, sl::Mat right, std::string frameId, ros::Time t)

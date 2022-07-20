@@ -2716,8 +2716,8 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
   uint32_t stereoSubNumber = 0; //mPubStereo.getNumSubscribers();
   uint32_t stereoRawSubNumber = 0 ; //mPubRawStereo.getNumSubscribers();
 
-  uint32_t tot_sub = rgbSubnumber + rgbRawSubnumber + leftSubnumber + leftRawSubnumber + rightSubnumber +
-                     rightRawSubnumber + rgbGraySubnumber + rgbGrayRawSubnumber + leftGraySubnumber +
+  uint32_t tot_sub = rgbSubnumber + rgbRawSubnumber + leftSubnumber + leftRawSubnumber + leftQoiSubnumber + rightSubnumber +
+                     rightRawSubnumber + rightQoiSubnumber + rgbGraySubnumber + rgbGrayRawSubnumber + leftGraySubnumber +
                      leftGrayRawSubnumber + rightGraySubnumber + rightGrayRawSubnumber + depthSubnumber +
                      disparitySubnumber + confMapSubnumber + stereoSubNumber + stereoRawSubNumber;
 
@@ -2743,7 +2743,7 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
     ts_rgb = mat_left.timestamp;
     grab_ts = mat_left.timestamp;
   }
-  if (rgbRawSubnumber + leftRawSubnumber + stereoRawSubNumber > 0)
+  if (rgbRawSubnumber + leftRawSubnumber + leftQoiSubnumber + stereoRawSubNumber > 0)
   {
     mZed.retrieveImage(mat_left_raw, sl::VIEW::LEFT_UNRECTIFIED, sl::MEM::CPU, mMatResolVideo);
     retrieved = true;
@@ -2755,7 +2755,7 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
     retrieved = true;
     grab_ts = mat_right.timestamp;
   }
-  if (rightRawSubnumber + stereoRawSubNumber > 0)
+  if (rightRawSubnumber + rightQoiSubnumber + stereoRawSubNumber > 0)
   {
     mZed.retrieveImage(mat_right_raw, sl::VIEW::RIGHT_UNRECTIFIED, sl::MEM::CPU, mMatResolVideo);
     retrieved = true;
@@ -2962,7 +2962,10 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
 
   if (rightQoiSubnumber > 0) {
     sensor_msgs::CompressedImagePtr rightQoiMsg = boost::make_shared<sensor_msgs::CompressedImage>();
+    auto const start = std::chrono::steady_clock::now();
     sl_tools::imageToCompressedROSmsg(rightQoiMsg, mat_right_raw, mRightCamOptFrameId, stamp, sl_tools::ImageCompression::QOI);
+    auto const end = std::chrono::steady_clock::now();
+    std::cerr << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << std::endl;
     mPubQoiRight.publish(rightQoiMsg);
   }
 
@@ -3577,8 +3580,10 @@ void ZEDWrapperNodelet::device_poll_thread_func()
     uint32_t rgbRawSubnumber = 0; //mPubRawRgb.getNumSubscribers();
     uint32_t leftSubnumber = mPubLeft.getNumSubscribers();
     uint32_t leftRawSubnumber = mPubRawLeft.getNumSubscribers();
+    uint32_t leftQoiSubnumber = mPubQoiLeft.getNumSubscribers();
     uint32_t rightSubnumber = mPubRight.getNumSubscribers();
     uint32_t rightRawSubnumber = mPubRawRight.getNumSubscribers();
+    uint32_t rightQoiSubnumber = mPubQoiRight.getNumSubscribers();
     uint32_t rgbGraySubnumber = 0; //mPubRgbGray.getNumSubscribers();
     uint32_t rgbGrayRawSubnumber = 0; //mPubRawRgbGray.getNumSubscribers();
     uint32_t leftGraySubnumber = 0; //mPubLeftGray.getNumSubscribers();
@@ -3605,7 +3610,7 @@ void ZEDWrapperNodelet::device_poll_thread_func()
 
     mGrabActive =
         mRecording || mStreaming || mMappingEnabled || mObjDetEnabled || mPosTrackingEnabled || mPosTrackingActivated ||
-        ((rgbSubnumber + rgbRawSubnumber + leftSubnumber + leftRawSubnumber + rightSubnumber + rightRawSubnumber +
+        ((rgbSubnumber + rgbRawSubnumber + leftSubnumber + leftRawSubnumber + leftQoiSubnumber + rightSubnumber + rightRawSubnumber + rightQoiSubnumber +
           rgbGraySubnumber + rgbGrayRawSubnumber + leftGraySubnumber + leftGrayRawSubnumber + rightGraySubnumber +
           rightGrayRawSubnumber + depthSubnumber + disparitySubnumber + cloudSubnumber + poseSubnumber +
           poseCovSubnumber + odomSubnumber + confMapSubnumber /*+ imuSubnumber + imuRawsubnumber*/ + pathSubNumber +
