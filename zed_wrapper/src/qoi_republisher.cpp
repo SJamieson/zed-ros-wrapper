@@ -2,6 +2,7 @@
 // Created by stewart on 7/28/22.
 //
 
+#define QOI_IMPLEMENTATION
 #include <libqoi/qoi.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/CompressedImage.h>
