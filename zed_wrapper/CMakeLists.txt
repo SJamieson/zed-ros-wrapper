@@ -53,6 +53,10 @@ add_executable(zed_wrapper_node ${NODE_SRC})
 target_link_libraries(zed_wrapper_node ${LINK_LIBRARIES})
 add_dependencies(zed_wrapper_node ${catkin_EXPORTED_TARGETS})
 
+add_executable(qoi_republisher ${CMAKE_CURRENT_SOURCE_DIR}/src/qoi_republisher.cpp)
+target_link_libraries(qoi_republisher ${LINK_LIBRARIES})
+add_dependencies(qoi_republisher ${catkin_EXPORTED_TARGETS})
+
 
 ###############################################################################
 #Add all files in subdirectories of the project in
