@@ -17,15 +17,15 @@ void callback(sensor_msgs::CompressedImageConstPtr const& compressed_img) {
     auto const decoded = qoi_decode(compressed_img->data.data(), compressed_img->data.size(), &desc, 0);
     assert(desc.channels == 3 || desc.channels == 4);
     sensor_msgs::Image out_msg;
-    size_t const size = desc.channels * desc.width * desc.height;
+    out_msg.step = desc.width * desc.channels;
+    size_t const size = out_msg.step * desc.height;
     out_msg.data.assign(static_cast<uint8_t const* const>(decoded), static_cast<uint8_t const* const>(decoded) + size);
-    out_msg.encoding = (desc.channels == 3) ? "8UC3" : "8UC4";
+    out_msg.encoding = (desc.channels == 3) ? "bgr8" : "bgra8"; // zedm 
     out_msg.height = desc.height;
     out_msg.width = desc.width;
     out_msg.header = compressed_img->header;
     int const num = 1;
     out_msg.is_bigendian = !(*(char*)&num == 1);
-    out_msg.step = desc.width;
     out.publish(out_msg);
 }
 
