@@ -2962,10 +2962,7 @@ void ZEDWrapperNodelet::callback_pubVideoDepth(const ros::TimerEvent& e)
 
   if (rightQoiSubnumber > 0) {
     sensor_msgs::CompressedImagePtr rightQoiMsg = boost::make_shared<sensor_msgs::CompressedImage>();
-    auto const start = std::chrono::steady_clock::now();
     sl_tools::imageToCompressedROSmsg(rightQoiMsg, mat_right_raw, mRightCamOptFrameId, stamp, sl_tools::ImageCompression::QOI);
-    auto const end = std::chrono::steady_clock::now();
-    std::cerr << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << std::endl;
     mPubQoiRight.publish(rightQoiMsg);
   }
 
