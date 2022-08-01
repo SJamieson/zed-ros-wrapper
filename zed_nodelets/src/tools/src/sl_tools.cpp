@@ -25,6 +25,10 @@
 #include <experimental/filesystem>  // for std::experimental::filesystem::absolute
 #include <sstream>
 #include <vector>
+#include <cstddef>
+
+#define QOI_IMPLEMENTATION
+#include <libqoi/qoi.h>
 
 #include "sl_tools.h"
 
@@ -289,6 +293,69 @@ void imageToROSmsg(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat img, std::string fra
       memcpy((uint16_t*)(&imgMsgPtr->data[0]), img.getPtr<sl::ushort1>(), size);
       break;
   }
+}
+
+void imageToCompressedROSmsg(sensor_msgs::CompressedImagePtr imgMsgPtr, sl::Mat img, std::string frameId, ros::Time t, ImageCompression const codec)
+{
+//	std::cerr << "Called imageToCompressedROSmsg" << std::endl;
+    if (!imgMsgPtr)
+    {
+        return;
+    }
+
+    imgMsgPtr->header.stamp = t;
+    imgMsgPtr->header.frame_id = frameId;
+
+    switch (codec)
+    {
+        case ImageCompression::QOI:
+            imgMsgPtr->format = "qoi";
+            break;
+        default:
+            throw std::invalid_argument("Codec is not yet implemented.");
+    }
+
+    int len = 0;
+    qoi_desc desc{static_cast<unsigned int>(img.getWidth()), static_cast<unsigned int>(img.getHeight()), 0, QOI_SRGB};
+//    std::cerr << "Width " << std::to_string(desc.width) << ", height " << std::to_string(desc.height) << std::endl;
+    if (desc.width == 0 || desc.height == 0) {
+//	std::cerr << "Zero size image!" << std::endl;
+	return;
+    }
+
+    sl::MAT_TYPE dataType = img.getDataType();
+    void* source;
+
+    switch (dataType)
+    {
+        case sl::MAT_TYPE::F32_C1: /**< float 1 channel.*/
+        case sl::MAT_TYPE::F32_C2: /**< float 2 channels.*/
+        case sl::MAT_TYPE::F32_C3: /**< float 3 channels.*/
+        case sl::MAT_TYPE::F32_C4: /**< float 4 channels.*/
+        case sl::MAT_TYPE::U16_C1: /**< unsigned short 1 channel.*/
+        case sl::MAT_TYPE::U8_C1: /**< unsigned char 1 channel.*/
+        case sl::MAT_TYPE::U8_C2: /**< unsigned char 2 channels.*/
+            throw std::invalid_argument("Unsupported image format for this codec");
+        case sl::MAT_TYPE::U8_C3: /**< unsigned char 3 channels.*/
+            desc.channels = 3;
+            source = reinterpret_cast<char*>(img.getPtr<sl::uchar3>());
+            break;
+        case sl::MAT_TYPE::U8_C4: /**< unsigned char 4 channels.*/
+            desc.channels = 4;
+            source = reinterpret_cast<char*>(img.getPtr<sl::uchar4>());
+            break;
+        default:
+	    throw std::invalid_argument("Unsupported image format for this codec");
+    }
+
+    if (source == nullptr) throw std::runtime_error("Source is null!");
+
+//    std::cerr << "Starting encode with " << std::to_string(desc.channels) << "channels, address " << std::to_string((unsigned long long)source)<< std::endl;
+    auto const data = qoi_encode(source, &desc, &len);
+    if (data == nullptr) throw std::invalid_argument("Failed to encode input image");
+    imgMsgPtr->data.assign(static_cast<uint8_t const* const>(data), static_cast<uint8_t const* const>(data) + len);
+    free(data);
+//    std::cerr << "Finished encode, length " << std::to_string(len) << std::endl;
 }
 
 void imagesToROSmsg(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat left, sl::Mat right, std::string frameId, ros::Time t)
