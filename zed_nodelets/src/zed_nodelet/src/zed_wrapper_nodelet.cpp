@@ -614,6 +614,7 @@ void ZEDWrapperNodelet::onInit()
   }
 
   // Services
+  mSrvUpdateSelfCalib = mNhNs.advertiseService("update_self_calibration", &ZEDWrapperNodelet::on_update_calib, this);
   mSrvSetInitPose = mNhNs.advertiseService("set_pose", &ZEDWrapperNodelet::on_set_pose, this);
   mSrvResetOdometry = mNhNs.advertiseService("reset_odometry", &ZEDWrapperNodelet::on_reset_odometry, this);
   mSrvResetTracking = mNhNs.advertiseService("reset_tracking", &ZEDWrapperNodelet::on_reset_tracking, this);
@@ -1344,6 +1345,11 @@ bool ZEDWrapperNodelet::set_pose(float xt, float yt, float zt, float rr, float p
   mInitialPoseSl.setOrientation(orient);
 
   return (mSensor2BaseTransfValid & mSensor2CameraTransfValid & mCamera2BaseTransfValid);
+}
+
+bool ZEDWrapperNodelet::on_update_calib(zed_interfaces::update_self_calibration::Request& req, zed_interfaces::update_self_calibration::Response& res) {
+    res.calib_done = sl_tools::updateSelfCalibration();
+    return res.calib_done;
 }
 
 bool ZEDWrapperNodelet::on_set_pose(zed_interfaces::set_pose::Request& req, zed_interfaces::set_pose::Response& res)
