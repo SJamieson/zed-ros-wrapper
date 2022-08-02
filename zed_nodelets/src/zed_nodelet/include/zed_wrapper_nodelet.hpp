@@ -57,6 +57,7 @@
 #include <zed_interfaces/toggle_led.h>
 #include <zed_interfaces/save_3d_map.h>
 #include <zed_interfaces/save_area_memory.h>
+#include <zed_interfaces/update_self_calibration.h>
 
 // Topics
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
@@ -265,6 +266,11 @@ protected:
    */
   bool on_reset_tracking(zed_interfaces::reset_tracking::Request& req, zed_interfaces::reset_tracking::Response& res);
 
+  /*! \brief Service callback to set_pose service
+   *        Tracking pose is set to the new values
+   */
+  bool on_update_calib(zed_interfaces::update_self_calibration::Request& req, zed_interfaces::update_self_calibration::Response& res);
+
   /*! \brief Service callback to reset_odometry service
    *        Odometry is reset to clear drift and odometry frame gets the latest
    * pose
@@ -462,6 +468,7 @@ private:
   ros::Timer mVideoDepthTimer;
 
   // Services
+  ros::ServiceServer mSrvUpdateSelfCalib;
   ros::ServiceServer mSrvSetInitPose;
   ros::ServiceServer mSrvResetOdometry;
   ros::ServiceServer mSrvResetTracking;
