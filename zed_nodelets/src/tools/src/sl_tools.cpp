@@ -295,11 +295,6 @@ void imageToROSmsg(sensor_msgs::ImagePtr imgMsgPtr, sl::Mat img, std::string fra
   }
 }
 
-bool updateSelfCalibration() {
-    sl::Camera::updateSelfCalibration();
-    return true;
-}
-
 void imageToCompressedROSmsg(sensor_msgs::CompressedImagePtr imgMsgPtr, sl::Mat img, std::string frameId, ros::Time t, ImageCompression const codec)
 {
 //	std::cerr << "Called imageToCompressedROSmsg" << std::endl;

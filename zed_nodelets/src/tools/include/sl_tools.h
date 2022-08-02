@@ -65,8 +65,6 @@ std::string getSDKVersion(int& major, int& minor, int& sub_minor);
  */
 ros::Time slTime2Ros(sl::Timestamp t);
 
-bool updateSelfCalibration();
-
 /*! \brief sl::Mat to ros message conversion
  * \param imgMsgPtr : the image topic message to publish
  * \param img : the image to publish
